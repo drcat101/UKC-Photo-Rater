@@ -1,4 +1,4 @@
-# Using convolutional neural networks to ? photo quality
+# Using convolutional neural networks to rate photo quality
 
 ## The data
 
@@ -6,7 +6,16 @@ This project came about because of idle speculation while out hiking: I take loa
 
 I realized that I had come across some data that might work for this: on the British climbing website http://www.ukclimbing.com/ , users upload their climbing and mountaineering photos to share them with the climbing community. Other users can rate the photos from 1\* to 5\* and comment on them.
 
+(upload screenshots of UKC photo page and ratings bit)
 
+At present there are over 165,400 photos shared on UKClimbing.com, and the vast majority of them can be voted on by users. The photos are predominantly landscapes and action shots of climbers, similar to the subjects I mostly take photos of myself. I wrote code to scrape the website and download the small thumbnail images (150x105 pixels), to keep file sizes manageable. I also collected the average vote for each photo (UKC records this as an integer from 1-5, with 5 being the best), the number of votes received, and the date the photo was uploaded.
+
+Number of photos
+Number of votes
+Vote distribution
+Vote increase over time
+
+## The experimental setup
 
 ## The neural network architecture
 
