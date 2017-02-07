@@ -1,5 +1,6 @@
 # this script downloads many URLs using multiple threads
 # this is the script for downloading the images
+# downloaded and adapted from https://code.google.com/p/workerpool/wiki/MassDownloader
 
 from urllib2 import urlopen
 import urllib2
@@ -122,4 +123,3 @@ end = time.time()
 print end-start
 
 
-# downloaded and adapted from https://code.google.com/p/workerpool/wiki/MassDownloader

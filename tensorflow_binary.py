@@ -15,9 +15,9 @@ BATCH_SIZE = 100  # The number of training examples to use per training step.
 
 # Define the flags usable from the command line.
 tf.app.flags.DEFINE_integer('num_epochs', 1,
-                            'Number of examples to separate from the training '
-                            'data for the validation set.')
+                            'Number of passes over the training data')
 tf.app.flags.DEFINE_boolean('verbose', False, 'Produce verbose output.')
+tf.app.flags.DEFINE_string('model_file', None, 'Filename for the saved model')
 FLAGS = tf.app.flags.FLAGS
 
 
@@ -229,14 +229,17 @@ def main(argv=None):
 
         print "Accuracy:", accuracy.eval(feed_dict={x: test_data, y_: test_labels})
 
-        save_path = saver.save(s, "trained_model_20160131.ckpt")
+        save_filename = FLAGS.model_file + '.ckpt'
+        save_path = saver.save(s, save_filename)
         print "Model saved in file: ", save_path
 
 
 
 
-#if __name__ == '__main__':
-#    tf.app.run()
+if __name__ == '__main__':
+    tf.app.run()
+
+# python tensorflow_binary.py
 
 # 10,000 photos, 50:50 split 1&2 vs 5, 100 epochs, learning rate 0.0001, AdamOptimizer: accuracy 0.621
 

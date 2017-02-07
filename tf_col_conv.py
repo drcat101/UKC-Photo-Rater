@@ -1,14 +1,10 @@
 # merging code from here: https://www.tensorflow.org/versions/master/tutorials/mnist/pros/index.html#deep-mnist-for-experts
 # with code from here: https://github.com/jasonbaldridge/try-tf/blob/master/hidden.py
 # trying colour photos this time
-# why is it so much faster than black and white????
 
 import tensorflow as tf
 import time
-import os
-from PIL import Image
-import numpy as np
-import pandas as pd
+
 import pickle
 import sys
 from tensorflow_binary import extract_data, vectorize_image
@@ -28,10 +24,10 @@ FLAGS = tf.app.flags.FLAGS
 
 def make_and_pickle_vectorized_photos(start_num, end_num, num_photos):
     features, values = extract_data(start_num, end_num, num_photos)
-    with open('objs_col.pickle', 'w') as f:
+    with open('objs_col_nov_20k.pickle', 'w') as f:
         pickle.dump([features, values], f)
 
-#make_and_pickle_vectorized_photos(100000, 250000, 10000)
+make_and_pickle_vectorized_photos(100000, 250000, 20000)
 
 from tensorflow_binary import make_training_testing_data
 
