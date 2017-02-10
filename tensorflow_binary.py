@@ -1,6 +1,5 @@
 # this is the script for training the model in Tensorflow, saving the model, running a saved model on new data,
 # binary classifier, no hidden layers (i.e. logistic regressor)
-# last update 1st March 2016
 
 import numpy as np
 import tensorflow as tf
@@ -8,6 +7,7 @@ import pandas as pd
 from PIL import Image
 import os
 from sklearn.cross_validation import train_test_split
+import pickle
 
 # Global variables.
 NUM_LABELS = 2   # The number of labels.
@@ -29,10 +29,19 @@ def vectorize_image(photo_id):
     try:
         im = Image.open(abs_file_path)
         im_list = list(im.getdata())
+        im_vector = []
+
         # problem if the image is in b&W - list of ints instead of tuples
-        # tf can't use vectors of different sizes - so skip it
+        # need all vectors to be the same size - so make tuples that are the int repeated 3 times
         if type(im_list[0]) == int:
-            return
+            for i in im_list:
+                i = float(i)
+                threei = [i]*3
+                im_vector.extend(threei)
+            if len(im_vector) == 47250:
+                return im_vector
+            else:
+                return
         else:
             im_vector = []
             for tup in im_list:
@@ -45,6 +54,7 @@ def vectorize_image(photo_id):
                 return im_vector
             else:
                 return
+    # if image doesn't exist
     except IOError:
         return
 
@@ -57,7 +67,7 @@ def extract_data(start_id, end_id, num_images):
     results_df = pd.read_csv('results.csv')
     results_df.columns = [c.replace(' ', '_') for c in results_df.columns]
 
-    # Arrays to hold the labels and feature vectors.
+    # arrays to hold the labels and feature vectors.
     labels = []
     fvecs = []
 
@@ -69,7 +79,6 @@ def extract_data(start_id, end_id, num_images):
     count_good = 0
     count_bad = 0
 
-
     for i in range(start_id, end_id +1):
         if count < num_images:
             try:
@@ -78,9 +87,9 @@ def extract_data(start_id, end_id, num_images):
                 if int(y_row.iloc[0, 1]) != 4:  # take out indoor climbing photos
                     # get the photo rating
                     # use rating from 0 to 4 instead of 1 to 5
+                    # so bad = 0 or 1 and good = 4
                     y_i = int(y_row.iloc[0, 2])-1
                     if y_i == 0 or y_i == 1:
-                      #  print y_i
                         if count_bad < num_images/2:
                             X_i = vectorize_image(i)
                             if X_i:
@@ -90,7 +99,6 @@ def extract_data(start_id, end_id, num_images):
                                 count += 1
                                 count_bad += 1
                     elif y_i == 4:
-                       # print y_i
                         if count_good < num_images/2:
                             X_i = vectorize_image(i)
                             if X_i:
@@ -102,24 +110,25 @@ def extract_data(start_id, end_id, num_images):
             except IndexError:
                 continue
 
-
-    # Convert the array of float arrays into a numpy float matrix.
+    # convert the array of float arrays into a numpy float matrix.
     fvecs_np = np.matrix(fvecs).astype(np.float32)
 
-    # Convert the array of int labels into a numpy array.
+    # convert the array of int labels into a numpy array.
     labels_np = np.array(labels).astype(dtype=np.uint8)
-#    print labels
 
-    # Convert the int numpy array into a one-hot matrix.
+    # convert the int numpy array into a one-hot matrix.
     labels_onehot = (np.arange(NUM_LABELS) == labels_np[:, None]).astype(np.float32)
-#    return labels_onehot
-#    print id_list
-    # Return a pair of the feature matrix and the one-hot label matrix.
+
+    # return a pair of the feature matrix and the one-hot label matrix.
     return fvecs_np, labels_onehot
 
 
 #print extract_data(244000, 245000, 10)
 
+def make_and_pickle_vectorized_photos(start_num, end_num, num_photos):
+    features, values = extract_data(100000, 250000, 10000)
+    with open('objs.pickle', 'w') as f:
+        pickle.dump([features, values], f)
 
 
 def make_training_testing_data(X, y):
@@ -236,8 +245,8 @@ def main(argv=None):
 
 
 
-if __name__ == '__main__':
-    tf.app.run()
+#if __name__ == '__main__':
+#    tf.app.run()
 
 # python tensorflow_binary.py
 
@@ -247,7 +256,7 @@ if __name__ == '__main__':
 def from_saved_model(model_path):
     test_data, test_labels = extract_data(100000, 250000, 10000)
 
-    # Get the shape of the training data.
+    # get the shape of the training data.
     _, num_features = test_data.shape
 
     x = tf.placeholder("float", shape=[None, num_features])
@@ -257,12 +266,12 @@ def from_saved_model(model_path):
     b = tf.Variable(tf.zeros([NUM_LABELS]))
     y = tf.nn.softmax(tf.matmul(x,W) + b)
 
-    # Add ops to save and restore all the variables.
+    # add options to save and restore all the variables.
     saver = tf.train.Saver()
 
     rating_list = []
 
-    # Later, launch the model, use the saver to restore variables from disk, and
+    # later, launch the model, use the saver to restore variables from disk, and
     # do some work with the model.
     with tf.Session() as sess:
         # Restore variables from disk.
