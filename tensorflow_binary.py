@@ -12,6 +12,12 @@ import pickle
 # Global variables.
 NUM_LABELS = 2   # The number of labels.
 BATCH_SIZE = 100  # The number of training examples to use per training step.
+PICKLE_FILE = 'objs_col.pickle'
+START_NUM = 240000
+END_NUM = 265000
+NUM_PHOTOS = 5000
+
+
 
 # Define the flags usable from the command line.
 tf.app.flags.DEFINE_integer('num_epochs', 1,
@@ -64,7 +70,7 @@ def vectorize_image(photo_id):
 def extract_data(start_id, end_id, num_images):
     # this selects a specified number of images rated 0, 1 or 4
     # open CSV file with labels
-    results_df = pd.read_csv('results.csv')
+    results_df = pd.read_csv('results_all.csv')
     results_df.columns = [c.replace(' ', '_') for c in results_df.columns]
 
     # arrays to hold the labels and feature vectors.
@@ -126,9 +132,11 @@ def extract_data(start_id, end_id, num_images):
 #print extract_data(244000, 245000, 10)
 
 def make_and_pickle_vectorized_photos(start_num, end_num, num_photos):
-    features, values = extract_data(100000, 250000, 10000)
-    with open('objs.pickle', 'w') as f:
+    features, values = extract_data(start_num, end_num, num_photos)
+    with open(PICKLE_FILE, 'w') as f:
         pickle.dump([features, values], f)
+
+#make_and_pickle_vectorized_photos(START_NUM, END_NUM, NUM_PHOTOS)
 
 
 def make_training_testing_data(X, y):
@@ -139,11 +147,13 @@ def main(argv=None):
     # adapted from blog post here: https://bcomposes.wordpress.com/2015/11/26/simple-end-to-end-tensorflow-examples/
 
     # Be verbose?
-    verbose = FLAGS.verbose
+    verbose = True
 
     # Extract it into numpy matrices.
     # Put start photo ID, end photo ID and number of images here.
-    features, values = extract_data(100000, 250000, 10000)
+
+    with open(PICKLE_FILE) as f:
+        features, values = pickle.load(f)
     train_data, test_data, train_labels, test_labels = make_training_testing_data(features, values)
 
     # get the number of images in each category
@@ -156,7 +166,7 @@ def main(argv=None):
     for key in test_labels_dict:
         test_labels_dict[key] = test_labels_dict[key]/float(test_labels_length)
     print test_labels_dict
-
+    print test_labels_length
 
 
     # Get the shape of the training data.
@@ -238,15 +248,15 @@ def main(argv=None):
 
         print "Accuracy:", accuracy.eval(feed_dict={x: test_data, y_: test_labels})
 
-        save_filename = FLAGS.model_file + '.ckpt'
-        save_path = saver.save(s, save_filename)
-        print "Model saved in file: ", save_path
+        #save_filename = FLAGS.model_file + '.ckpt'
+        #save_path = saver.save(s, save_filename)
+        #print "Model saved in file: ", save_path
 
 
 
 
-#if __name__ == '__main__':
-#    tf.app.run()
+if __name__ == '__main__':
+    tf.app.run()
 
 # python tensorflow_binary.py
 
@@ -306,3 +316,4 @@ def from_saved_model(model_path):
 # (100973, 0.59642172, 0), (101532, 0.60017419, 0), (100517, 0.60316259, 0), (100229, 0.61357808, 1),
 # (100010, 0.61579573, 0), (100360, 0.64027715, 1)]
 
+# accuracy with objs_col: 0.631 (2000 photos)

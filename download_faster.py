@@ -2,6 +2,10 @@
 # this is the script for downloading the images
 # downloaded and adapted from https://code.google.com/p/workerpool/wiki/MassDownloader
 
+# end 2016: 287231
+# end 2015:
+# end 2014: 250624
+
 from urllib2 import urlopen
 import urllib2
 import workerpool
@@ -75,7 +79,6 @@ def get_all_data_for_one_photo(photo_id):
             orig_width_result = None
             orig_height_result = None
 
-
         # download the thumbnail file
         thumb_url = 'http://cdn.ukc2.com/t/'+str(photo_id)+'.jpg'
         file_name = str(photo_id) + '.jpg'
@@ -93,16 +96,16 @@ def get_all_data_for_one_photo(photo_id):
             return
 
 
-def make_pool_and_write_csv(start_id, end_id):
+def make_pool_and_write_csv(start_id, end_id, output_file):
 
-    # Initialize a pool, 10 threads in this case
+    # initialize a pool, 10 threads in this case
     pool = workerpool.WorkerPool(size=10)
 
     # make a lock
     lock = threading.Lock()
 
     # open csv file, write header row
-    with open('results.csv', 'wb') as f:
+    with open(output_file, 'wb') as f:
         writer = csv.writer(f)
         writer.writerow(['Photo ID', 'Category', 'Rating', 'Number of votes', 'Original width', 'Original height',
                          'Thumbnail width', 'Thumbnail height'])
@@ -112,13 +115,15 @@ def make_pool_and_write_csv(start_id, end_id):
             job = DownloadJob(id, writer, lock)
             pool.put(job)
 
-        # Send shutdown jobs to all threads, and wait until all the jobs have been completed
+        # send shutdown jobs to all threads, and wait until all the jobs have been completed
         pool.shutdown()
         pool.wait()
 
 
 start = time.time()
-make_pool_and_write_csv(0, 269787)
+#make_pool_and_write_csv(0, 269787)
+make_pool_and_write_csv(269787, 287231, 'results_2.csv')
+
 end = time.time()
 print end-start
 

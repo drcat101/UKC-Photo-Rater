@@ -14,20 +14,20 @@ from tensorflow_binary import extract_data, vectorize_image
 NUM_LABELS = 2    # The number of labels.
 BATCH_SIZE = 100  # The number of training examples to use per training step.
 
-tf.app.flags.DEFINE_integer('number_epochs', 1,
+tf.app.flags.DEFINE_integer('number_epochs', 10,
                             'Number of passes over the training data.')
 
-tf.app.flags.DEFINE_boolean('verb', False, 'Produce verbose output.')
+tf.app.flags.DEFINE_boolean('verb', True, 'Produce verbose output.')
 FLAGS = tf.app.flags.FLAGS
 
 
 
 def make_and_pickle_vectorized_photos(start_num, end_num, num_photos):
     features, values = extract_data(start_num, end_num, num_photos)
-    with open('objs_col_nov_20k.pickle', 'w') as f:
+    with open('objs_col_feb_10k.pickle', 'w') as f:
         pickle.dump([features, values], f)
 
-make_and_pickle_vectorized_photos(100000, 250000, 20000)
+#make_and_pickle_vectorized_photos(269787, 287231, 10000)
 
 from tensorflow_binary import make_training_testing_data
 
@@ -58,7 +58,7 @@ def main(argv=None):
     # Be verbose?
     verbose = FLAGS.verb
 
-    # Load extracted data in numpty arrays from pickle
+    # Load extracted data in numpy arrays from pickle
     with open('objs_col.pickle') as f:
         features, values = pickle.load(f)
     print 'Finished loading data'
@@ -110,7 +110,7 @@ def main(argv=None):
     keep_prob = tf.placeholder(tf.float32)
     h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
 
-    # Finally, we add a softmax layer, just like for the one layer softmax regression.
+    # Finally, we add a softmax layer
 
     W_fc2 = weight_variable([1024, NUM_LABELS])
     b_fc2 = bias_variable([NUM_LABELS])

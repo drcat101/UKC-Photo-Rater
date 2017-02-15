@@ -8,6 +8,9 @@ import numpy as np
 import tensorflow as tf
 import pickle
 
+from tensorflow_binary import make_training_testing_data
+
+
 # Global variables.
 NUM_LABELS = 2    # The number of labels.
 BATCH_SIZE = 1000  # The number of training examples to use per training step.
@@ -22,16 +25,7 @@ FLAGS = tf.app.flags.FLAGS
 # Extract numpy representations of the labels and features given rows consisting of:
 #   label, feat_0, feat_1, ..., feat_n
 
-from tensorflow_binary import extract_data, vectorize_image, make_training_testing_data
 
-
-def make_and_pickle_vectorized_photos(start_num, end_num, num_photos):
-    features, values = extract_data(100000, 250000, 10000)
-    with open('objs.pickle', 'w') as f:
-        pickle.dump([features, values], f)
-
-
-#make_and_pickle_vectorized_photos(100000, 250000, 10000)
 
 # Init weights method. (Lifted from Delip Rao: http://deliprao.com/archives/100)
 def init_weights(shape, init_method='xavier', xavier_params = (None, None)):
@@ -52,8 +46,7 @@ def main(argv=None):
     verbose = FLAGS.verb
 
     # Extract it into numpy arrays.
-    #features, values = extract_data(100000, 250000, 10000)
-    with open('objs.pickle') as f:
+    with open('objs_col.pickle') as f:
         features, values = pickle.load(f)
 
     train_data, test_data, train_labels, test_labels = make_training_testing_data(features, values)
