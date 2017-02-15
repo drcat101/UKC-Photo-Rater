@@ -1,6 +1,7 @@
-# merging code from here: https://www.tensorflow.org/versions/master/tutorials/mnist/pros/index.html#deep-mnist-for-experts
+# merging code from here:
+# https://www.tensorflow.org/versions/master/tutorials/mnist/pros/index.html#deep-mnist-for-experts
 # with code from here: https://github.com/jasonbaldridge/try-tf/blob/master/hidden.py
-# black and white photos only
+# converts photos to black and white to reduce file sizes
 
 import tensorflow as tf
 import time
