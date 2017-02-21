@@ -15,11 +15,14 @@ The machine learning system is set up as a binary classification problem, with c
 
 ## The neural network architecture
 
-- based on https://www.tensorflow.org/versions/master/tutorials/mnist/pros/index.html#deep-mnist-for-experts
-- first tried a simple logistic regression (tf_binary.py)
-- then a neural network with a single hidden layer (tf_hidden.py)
-- then a convolutional neural network on photos in black and white
-- then a convnet in color
+**tf_binary.py** contains code for a simple logistic regression, and helper functions to turn the image files into vectors.
 
+**tf_hidden.py** contains a neural network with a single hidden layer.
+
+**tf_bw_conv.py** contains a convolutional neural network that is trained on images converted to black and white (to reduce the vector length and increase speed). The network consists of two convolutional layers with ReLU and max pooling, one densely connected layer, dropout before the final readout layer, and a softmax layer.
+
+**tf_col_conv.py** extends this to color photos.
+
+Code is based on the Tensorflow "Deep MNIST for experts" [tutorial.](https://www.tensorflow.org/versions/master/tutorials/mnist/pros/index.html#deep-mnist-for-experts)
 
 
